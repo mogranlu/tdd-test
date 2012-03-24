@@ -1,0 +1,21 @@
+# Maven-specific files #
+########################
+target/
+*/target/*
+
+# Eclipse-specific files #
+##########################
+.classpath
+.project
+*/.classpath
+*/.project
+
+# Compiled source #
+###################
+*.class
+
+# Packages #
+############
+*.jar
+*.war
+*.ear
