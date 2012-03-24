@@ -1,1 +1,6 @@
-This is the tdd-test repo
+###########################################################################
+# A personal test repo, used for testing out TDD (Test Driven Development)
+# frameworks such as mockito, fest assertions, JUnit, hamrest, misc 
+# Eclipse plugins and much more.
+#
+###########################################################################
