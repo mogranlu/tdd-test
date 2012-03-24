@@ -1,0 +1,1 @@
+WHY use fest: http://docs.codehaus.org/display/FEST/Comparing+to+Hamcrest
