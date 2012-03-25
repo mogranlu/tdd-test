@@ -1,6 +1,7 @@
 package mg.tdd;
 
 import static java.util.Calendar.DECEMBER;
+import static java.util.Calendar.JANUARY;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -8,6 +9,7 @@ import java.util.GregorianCalendar;
 public class SimpleDateParser {
 
 	public static final String MAXIMUM_DATE_ALIAS = "999999";
+	public static final String MINIMUM_DATE_ALIAS = "000000";
 
 	/**
 	 * Every two-digit year is prefixed with 20, limiting the possible dates to
@@ -15,9 +17,13 @@ public class SimpleDateParser {
 	 */
 	protected static final String FIXED_CENTURY = "20";
 
-	private static final Calendar MAXIMUM_DATE;
+	public static final Calendar MAXIMUM_DATE;
+	public static final Calendar MINIMUM_DATE;
 
 	static {
+		MINIMUM_DATE = Calendar.getInstance();
+		MINIMUM_DATE.set(1970, JANUARY, 1);
+
 		MAXIMUM_DATE = Calendar.getInstance();
 		MAXIMUM_DATE.set(2099, DECEMBER, 31);
 	}
@@ -32,15 +38,13 @@ public class SimpleDateParser {
 	public Calendar parseDate(String dateAsString)
 			throws IllegalArgumentException {
 
-		if (dateAsString == null) {
-			throw new IllegalArgumentException(
-					"Cannot parse a null reference as a date! Expected a 6-digit String object describing a date on the following format: \"DDMMYY\".");
-		} else {
-			dateAsString = dateAsString.trim();
-		}
+		validateInputParameterAndThrowException(dateAsString);
+		dateAsString = dateAsString.trim();
 
 		if (dateAsString.equals(MAXIMUM_DATE_ALIAS)) {
 			return MAXIMUM_DATE;
+		} else if (dateAsString.equals(MINIMUM_DATE_ALIAS)) {
+			return MINIMUM_DATE;
 		}
 
 		GregorianCalendar newDate = new GregorianCalendar();
@@ -50,6 +54,23 @@ public class SimpleDateParser {
 		validate(newDate);
 
 		return newDate;
+	}
+
+	private void validateInputParameterAndThrowException(String dateAsString) {
+		if (dateAsString == null) {
+			throw new IllegalArgumentException(
+					"Cannot parse a null reference as a date! Expected a 6-digit String object describing a date on the following format: \"DDMMYY\".");
+		}
+		dateAsString = dateAsString.trim();
+		if (dateAsString.length() != 6) {
+			StringBuilder errorMsg = new StringBuilder(
+					"dateAsString parameter must be of length 6, but was: ");
+			errorMsg.append(dateAsString.length());
+
+			throw new IllegalArgumentException(errorMsg.toString());
+		}
+
+		return;
 	}
 
 	private void validate(GregorianCalendar newDate)

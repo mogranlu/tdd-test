@@ -2,6 +2,7 @@ package mg.tdd;
 
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.DECEMBER;
+import static java.util.Calendar.JANUARY;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
 import static org.fest.assertions.Assertions.assertThat;
@@ -10,7 +11,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SimpleDateParserTest {
@@ -69,10 +69,16 @@ public class SimpleDateParserTest {
 		simpleDateParser.parseDate("   ");
 	}
 
-	@Test
-	@Ignore
-	public void shouldTreatValue_000000_AsASpecialDate() {
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIllegalArgumentExceptionOnStringThatContainsAnythingElseThanDigits() {
+		simpleDateParser.parseDate("12E45678");
+	}
 
+	@Test
+	public void shouldTreatValue_000000_AsASpecialDate() {
+		Calendar parsedDate = simpleDateParser.parseDate("000000");
+		Calendar expectedDate = new GregorianCalendar(1970, JANUARY, 1);
+		assertCalendarEquality(expectedDate, parsedDate);
 	}
 
 	private void assertCalendarEquality(Calendar date1, Calendar date2) {
