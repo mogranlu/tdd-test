@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SimpleDateParserTest {
@@ -22,25 +23,61 @@ public class SimpleDateParserTest {
 	}
 
 	@Test
-	public void shouldReturnValidDateFor6DigitString() throws Exception {
+	public void shouldReturnValidDateFor6DigitString() {
 		Calendar date = simpleDateParser.parseDate("111213");
 		Calendar expectedDate = new GregorianCalendar(2013, DECEMBER, 11);
 		assertThat(date).isNotNull().isInstanceOf(Calendar.class);
-		assertThat(date.get(MONTH)).isEqualTo(expectedDate.get(MONTH));
-		assertThat(date.get(YEAR)).isEqualTo(expectedDate.get(YEAR));
-		assertThat(date.get(DAY_OF_MONTH)).isEqualTo(
-				expectedDate.get(DAY_OF_MONTH));
+		assertCalendarEquality(date, expectedDate);
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void shouldThrowNullPointerExceptionIfParameterIsANullReference()
-			throws Exception {
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowNullPointerExceptionIfParameterIsANullReference() {
 		simpleDateParser.parseDate(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowExceptionForIllegalDates() throws Exception {
+	public void shouldThrowExceptionForIllegalDates() {
 		simpleDateParser.parseDate("331500");
 	}
 
+	@Test
+	public void shouldTreatValue_999999_AsASpecialDate() {
+		Calendar almostMaximumIntoTheFuture = Calendar.getInstance();
+		almostMaximumIntoTheFuture.set(2099, DECEMBER, 30);
+
+		Calendar futureDate = simpleDateParser.parseDate("999999");
+		assertThat(futureDate.after(almostMaximumIntoTheFuture));
+	}
+
+	@Test
+	public void shouldAutomaticallyTrimAwayLeadingAndTrailingWhiteSpaces() {
+		Calendar date = simpleDateParser.parseDate(" 010203  ");
+		Calendar expectedDate = Calendar.getInstance();
+		expectedDate.set(2003, Calendar.FEBRUARY, 1);
+
+		assertThat(date).isNotNull();
+		assertCalendarEquality(date, expectedDate);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIllegalArgumentExceptionOnEmptyString() {
+		simpleDateParser.parseDate("");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowIllegalArgumentExceptionOnStringThatIsEmptyOnlyAfterTrim() {
+		simpleDateParser.parseDate("   ");
+	}
+
+	@Test
+	@Ignore
+	public void shouldTreatValue_000000_AsASpecialDate() {
+
+	}
+
+	private void assertCalendarEquality(Calendar date1, Calendar date2) {
+		assertThat(date1.get(YEAR)).isEqualTo(date2.get(YEAR));
+		assertThat(date1.get(MONTH)).isEqualTo(date2.get(MONTH));
+		assertThat(date1.get(DAY_OF_MONTH)).isEqualTo(date2.get(DAY_OF_MONTH));
+	}
 }
